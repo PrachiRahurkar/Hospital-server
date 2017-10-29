@@ -1,0 +1,521 @@
+import java.util.*;
+
+import java.net.*;
+
+import java.io.*;
+
+import java.text.SimpleDateFormat;
+public class HospitalServer1
+
+{
+
+    String [][]wards;//floor no , ward no
+
+    String [][]bedissue;
+
+    DataInputStream dis;
+
+    DataOutputStream dos;
+
+    int counter;
+    HospitalServer1()throws Exception
+
+    {
+
+        counter=0;
+
+        ServerSocket ss=new ServerSocket(1010);//1010 is the port no. on which client connections are accepted
+
+        Socket s=ss.accept();//accept connection from client
+
+        dis=new DataInputStream(s.getInputStream());//reading incoming data
+
+        dos=new DataOutputStream(s.getOutputStream());//writing data
+
+        
+
+        wards=new String[4][5];
+
+        wards[0][0]="00";
+
+        wards[0][1]="01";
+
+        wards[0][2]="02";
+
+        wards[0][3]="03";
+
+        wards[0][4]="04";
+
+        //
+
+        wards[1][0]="10";
+
+        wards[1][1]="11";
+
+        wards[1][2]="12";
+
+        wards[1][3]="13";
+
+        wards[1][4]="14";
+
+        //
+
+        wards[2][0]="20";
+
+        wards[2][1]="21";
+
+        wards[2][2]="22";
+
+        wards[2][3]="23";
+
+        wards[2][4]="24";
+
+        //
+
+        wards[3][0]="3";
+
+        wards[3][1]="3";
+
+        wards[3][2]="3";
+
+        wards[3][3]="3";
+
+        wards[3][4]="3";
+
+               
+
+        bedissue = new String[4][4];
+
+    }//end of constructor
+    
+    public static void main(String args[])throws Exception
+
+    {  
+
+        int choice=0;
+
+        HospitalServer1 ls = new HospitalServer1();
+
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+
+        while(choice!=4)
+
+        {   ls.dos.writeUTF("\n1.Issue Bed\n2.Release bed\n3.Exit\nEnter Your Choice");
+
+            ls.dos.writeUTF("send");
+
+            choice=Integer.parseInt(ls.dis.readUTF());
+
+            switch(choice)
+
+            {
+
+               
+
+                case 1 : ls.issueBeds();
+
+                         break;
+
+                case 2:ls.releaseBed();
+
+                          break;
+
+                case 3:ls.dos.writeUTF("Exit");
+
+            }//end of switch
+
+        
+        }//end of while
+    }//end of main
+    
+    
+    
+    void issueBeds()throws Exception
+
+    {
+
+        dos.writeUTF("Choose Your ward:");
+
+      
+
+        dos.writeUTF("send");
+
+        int choice = Integer.parseInt(dis.readUTF());
+
+        String bno="";
+
+        switch(choice)
+
+        {
+
+            case 0:
+
+                    for(int i=0;i<=4;i++)
+
+                    {
+
+
+                           dos.writeUTF("Bed N0.:"+ wards[0][i]);
+
+                                         
+
+                    }
+
+                    dos.writeUTF("Enter Selected ward No.");
+
+                    dos.writeUTF("send");
+
+                    bno = dis.readUTF();
+
+
+                    break;
+
+                case 1:
+
+                    for(int i=0;i<=4;i++)
+
+                    {
+
+                      
+
+                          dos.writeUTF("Bed N0.:"+ wards[1][i]);
+
+
+
+                    }
+
+                    dos.writeUTF("Enter Selected ward No.");
+
+                    dos.writeUTF("send");
+
+                    bno = dis.readUTF();
+
+
+                    break;
+
+ 	case 2:
+
+                    for(int i=0;i<=4;i++)
+
+                    {
+
+                      
+
+                          dos.writeUTF("Bed N0.:"+ wards[2][i]);
+
+
+
+                    }
+
+                    dos.writeUTF("Enter Selected ward No.");
+
+                    dos.writeUTF("send");
+
+                    bno = dis.readUTF();
+
+
+                    break;
+
+     /*     case 3:
+
+                    for(int i=0;i<=4;i++)
+
+                    {
+
+                      
+
+                          dos.writeUTF("Bed N0.:"+ wards[3][i]);
+
+
+
+                    }
+
+                    dos.writeUTF("Enter Selected ward No.");
+
+                    dos.writeUTF("send");
+
+                    bno = dis.readUTF();
+
+
+                    break;
+
+                           
+
+                        default:dos.writeUTF("TRY AGAIN!!! :(");
+
+                               
+
+        }*/
+
+       
+        }
+        for(int i=0;i<=4;i++)
+
+        {
+
+            if(bno.equalsIgnoreCase(wards[i][3]))
+
+            {
+
+                int copies=Integer.parseInt(wards[i][3]);
+
+                if(copies==0)
+
+                    dos.writeUTF("Sorry!...No bed available");
+
+                else
+
+                {
+
+                   
+
+                    copies=copies-1;
+
+                    wards[i][4]=""+copies;
+
+                    bedissue[counter][0]=wards[i][0];
+
+                    SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
+
+                    Date d1=new Date();
+
+                    bedissue[counter][1]=dt1.format(d1).toString();
+
+                    
+
+                    dos.writeUTF("Enter Card No.");
+
+                    dos.writeUTF("send");
+
+                    bedissue[counter][3]=dis.readUTF();
+
+                    counter++;
+
+                    dos.writeUTF("Bed Issued... ");
+
+                    display();
+
+                }
+
+            }
+        
+        }
+
+    }//end of issueBeds
+    
+    void releaseBed()throws Exception
+
+    {
+
+      dos.writeUTF("Enter floor/ward");
+
+      dos.writeUTF("send");
+
+      String bno = dis.readUTF();
+
+      dos.writeUTF("Enter Card No.");
+
+      dos.writeUTF("send");
+
+      String cardno=dis.readUTF();
+
+      for(int j=0;j<counter;j++)
+
+      {
+
+          if(bno.equalsIgnoreCase(bedissue[j][0]) && cardno.equalsIgnoreCase(bedissue[j][3]))
+
+                  {
+
+                      SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
+
+                    Date d1=new Date();
+
+                   
+
+                       
+
+                       
+
+                        //dos.writeUTF(d1.toString());
+
+                        Date d2=new SimpleDateFormat("yyyy-MM-dd").parse(bedissue[j][1]);
+
+                        //System.out.println(d2.toString());
+
+                        bedissue[j][2]=dt1.format(d1).toString();
+
+                       
+
+                        int days =d1.compareTo(d2);
+
+                       // dos.writeUTF(""+days);
+
+                        if(days>7)
+
+                        {
+
+                         int penalty=(days-7)*5;
+
+                         dos.writeUTF("Please pay a penalty of rupees:"+penalty+" since you are releasing the bed "+(days-7)+" days late");
+
+                        }
+
+                       
+
+      for(int i=0;i<=3;i++)
+
+      {
+
+          if(bno.equalsIgnoreCase(wards[i][0]))
+
+          {
+
+              int copies=Integer.parseInt(wards[i][4]);
+
+               copies++;
+
+               wards[i][4]=""+copies;
+
+              
+
+          }
+
+         
+
+      }
+
+      dos.writeUTF("Bed Released");
+
+      display();
+
+                  }
+
+          else
+
+            dos.writeUTF("Enter Correct floor and ward & card no.");
+
+             
+
+      }
+
+    }// end of release beds
+     void display()throws Exception
+
+    {
+
+       for(int i=0;i<=3;i++)
+
+       {
+
+         dos.writeUTF(wards[i][0]+" : "+wards[i][1]+" : " + wards[i][2]+" : "+ wards[i][3]+" : "+wards[i][4] );
+
+       }
+
+       for(int i=0;i<counter;i++)
+
+       {
+
+         dos.writeUTF(bedissue[i][0]+" : "+bedissue[i][1]+" : " + bedissue[i][2]+" : "+ bedissue[i][3]);
+
+       }
+
+    }//end of display
+    
+    
+
+}//end of class
+
+
+CLIENT SIDE
+
+
+import java.net.*;
+
+import java.io.*;
+
+public class HospitalClient1{
+
+   
+
+    public static void main(String args[])throws IOException
+
+    {   InetAddress inr=InetAddress.getLocalHost();
+
+        Socket s=new Socket(inr,1010);
+
+        DataInputStream dis=new DataInputStream(s.getInputStream());
+
+        DataOutputStream dos=new DataOutputStream(s.getOutputStream());
+
+        String msg="";
+
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+
+        while(!msg.equals("Exit"))
+
+        {   msg=dis.readUTF();
+
+            if(!msg.equals("send"))
+
+            System.out.println("Server Says: "+msg);
+
+            if(msg.equals("send"))
+
+            {
+
+            System.out.println("Client Says:");
+
+            msg=br.readLine();
+
+            dos.writeUTF(msg);
+
+            }
+
+        }
+
+    }
+
+}
+
+**** OUTPUT *****
+
+run:
+Server Says: 
+1.Issue Bed
+2.Release bed
+3.Exit
+Enter Your Choice
+Client Says:
+1
+Server Says: Choose Your ward:
+Client Says:
+2
+Server Says: Bed N0.:20
+Server Says: Bed N0.:21
+Server Says: Bed N0.:22
+Server Says: Bed N0.:23
+Server Says: Bed N0.:24
+Server Says: Enter Selected ward No.
+Client Says:
+22
+Bed issued !!!
+Server Says: 
+1.Issue Bed
+2.Release bed
+3.Exit
+Enter Your Choice
+Client Says:
+2
+Server Says: Choose Your ward:
+Client Says:
+2
+Server Says: Bed N0.:20
+Server Says: Bed N0.:21
+Server Says: Bed N0.:22
+Server Says: Bed N0.:23
+Server Says: Bed N0.:24
+Server Says: Enter Selected ward No.
+Client Says:
+22
+Bed Released !!
